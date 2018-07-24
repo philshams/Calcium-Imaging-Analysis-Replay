@@ -185,6 +185,7 @@ save(results_file, 'dff', 'f0', '-append');
 % for each session
 session_results = load(results_file);
 session_types{task_session} = 'task'; session_types{sleep_session} = 'sleep'; stable_epoch = {};
+truncate_and_save = false;
 for session = [task_session sleep_session]
     avg_trace = zeros(1,length(session_results.dff(session,1).activity));
     
@@ -206,6 +207,7 @@ for session = [task_session sleep_session]
             'Enter epoch to keep (start index, space, end index)', ...
             'stable epoch', 1, {''}, struct('WindowStyle','normal'));
         epoch = str2num(epoch{1}); 
+        truncate_and_save = true;
     else
         epoch = [1 length(avg_trace)];
     end
@@ -215,15 +217,16 @@ for session = [task_session sleep_session]
     
 end
 
-% save to results file
-for cell = 1:length(session_results.dff(session,:))
-    session_results.dff(1,cell).stable_epoch = stable_epoch{1};  
-    session_results.dff(2,cell).stable_epoch = stable_epoch{2}; 
+% save to results file, if changes made
+if truncate_and_save || ~isfield(session_results.dff,'stable_epoch')
+    for cell = 1:length(session_results.dff(session,:))
+        session_results.dff(1,cell).stable_epoch = stable_epoch{1};  
+        session_results.dff(2,cell).stable_epoch = stable_epoch{2}; 
+    end
+    dff = session_results.dff;
+    disp('saving stable epoch')
+    save(results_file, 'stable_epoch', 'dff', '-append');
 end
-dff = session_results.dff;
-
-save(results_file, 'stable_epoch', 'dff', '-append');
-
 
 end
 

@@ -24,7 +24,7 @@ load_behaviour_and_results
 
 % active cells only?
 % provide threshold of proportion activity > 5 std negative distribution
-active_cells_only = false; active_cell_threshold = .015;
+active_cells_only = true; active_cell_threshold = .01;
 
 
 
@@ -113,6 +113,7 @@ if active_cells_only
     end
     cells_to_plot = active_cells;
     figure_name = 'PSTH of all active cells';
+    disp(['plotting ' num2str(length(active_cells)) ' of ' num2str(length(activity_struct)) ' cells'])
 % if not filtering by activity, include all cells    
 else
     cells_to_plot = 1:size(psth.(stims{s}),1);
@@ -144,10 +145,10 @@ for s = 1:length(stims)
         plot(psth_window/frame_rate, psth_BS.(stims{s})(cell,:),'color',[0 0 1 .7],'linewidth',.6)
     end
 
-    % plot median and quartiles
-    plot(psth_window/frame_rate, prctile(psth_BS.(stims{s}),25),'color',[.6 .6 .8],'linewidth',1)
-    plot(psth_window/frame_rate, prctile(psth_BS.(stims{s}),50),'color','white','linewidth',2)
-    plot(psth_window/frame_rate, prctile(psth_BS.(stims{s}),75),'color',[.6 .6 .8],'linewidth',1)
+    % plot mean / std
+    plot(psth_window/frame_rate, mean(psth_BS.(stims{s}))-std(psth_BS.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
+    plot(psth_window/frame_rate, mean(psth_BS.(stims{s})),'color','white','linewidth',2)
+    plot(psth_window/frame_rate, mean(psth_BS.(stims{s}))+std(psth_BS.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')    
     
     % plot formatting
     ylim([-1 1])

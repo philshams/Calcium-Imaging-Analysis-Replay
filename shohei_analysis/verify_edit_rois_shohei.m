@@ -20,7 +20,7 @@ psth_window = -10:20;
 stims = {'a1','b1','a2','b2','r1'};
 
 % update time series using the edited and saved ROIs?
-update_time_series = false;
+update_time_series = true;
 
 
 
@@ -121,10 +121,10 @@ fprintf('estimating stacks offsets...\n');
 if isfield(session_results,'offsets')
     offsets = session_results.offsets;
 else
-%     session_results.opts.nframes = 20 % this option missing...?
-%     session_results.opts.npixels = 2000 % this option missing...?
-%     session_results.opts.ncomps = 2 % this option missing...?
-%     session_results.opts.maxiter_gmm = 1000
+    session_results.opts.nframes = 20 % this option missing...?
+    session_results.opts.npixels = 2000 % this option missing...?
+    session_results.opts.ncomps = 2 % this option missing...?
+    session_results.opts.maxiter_gmm = 1000
     offsets = stacksoffsets_gmm(task_stack, ...
         'nframes', session_results.opts.nframes, 'npixels', session_results.opts.npixels, ...
         'maxiter', session_results.opts.maxiter_gmm, 'ncomps', session_results.opts.ncomps);
@@ -134,7 +134,7 @@ end
 
 % extract ROIs time series
 fprintf('extracting ROIs time series...\n');
-ts = stacksextract(task_stack, session_results.rois, xyshifts, ...
+ts = stacksextract(task_stack, session_results.rois, session_results.xyshifts, ...
     'offsets', offsets, 'chunksize', session_results.opts.chunksize, ...
     'verbose', session_results.opts.verbose, 'useparfor', session_results.opts.useparfor);
 save(results_file, 'ts', '-append');
@@ -142,8 +142,8 @@ save(results_file, 'ts', '-append');
 
 % compute deltaF/FO
 fprintf('estimating dF/F0...\n');
-% session_results.opts.half_win = [];  % this option missing...?
-% session_results.opts.perc = 40;  % this option missing...?
+session_results.opts.half_win = [];  % this option missing...?
+session_results.opts.perc = 40;  % this option missing...?
 extractfcn = @(x) extractdff_prc(x, session_results.opts.perc, session_results.opts.half_win);
 [dff, f0] = roisfilter(ts, extractfcn); 
 save(results_file, 'dff', 'f0', '-append');

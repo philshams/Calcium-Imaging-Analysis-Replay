@@ -25,7 +25,7 @@ load_behaviour_and_results_shohei
 
 % active cells only?
 % provide threshold of proportion activity > 5 std negative distribution
-active_cells_only = true; active_cell_threshold = .015;
+active_cells_only = true; active_cell_threshold = .01;
 
 
 
@@ -102,7 +102,7 @@ if active_cells_only
         rectified_negative_activity = [curr_cell_activity(curr_cell_activity<0) abs(curr_cell_activity(curr_cell_activity<0))];
         
         % get 5x STD of this rectified histogram
-        activity_threshold = 4*std(rectified_negative_activity);
+        activity_threshold = 5*std(rectified_negative_activity);
         
         % check if this cell is active
         proportion_activity_over_threshold = sum(curr_cell_activity>activity_threshold) / length(curr_cell_activity);
@@ -142,7 +142,7 @@ for s = 1:length(stims)
         plot(psth_window/frame_rate, psth_BS.(stims{s})(cell,:),'color',[0 0 1 .7],'linewidth',.6)
     end
 
-    % plot median and quartiles
+    % plot mean / std
     plot(psth_window/frame_rate, mean(psth_BS.(stims{s}))-std(psth_BS.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
     plot(psth_window/frame_rate, mean(psth_BS.(stims{s})),'color','white','linewidth',2)
     plot(psth_window/frame_rate, mean(psth_BS.(stims{s}))+std(psth_BS.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')    
