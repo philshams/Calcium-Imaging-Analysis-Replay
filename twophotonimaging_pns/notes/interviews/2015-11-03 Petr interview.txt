@@ -1,0 +1,84 @@
+Petr interview - TwoPhotonPipeline demo
+=======================================
+
+Experimental setup
+------------------
+
+- 4 machines
+  + imaging machine: use ScanImage (Matlab) to get images
+    => TIFF images + grab file (.mat file, specific to ScanImage)
+  + stimulus machaine: triggered by imaging machine
+    => use of Psycho(physics ?) Matlab toolbox, .mat files output
+  + eyecam machine
+    => receive mirror position signal from hardware
+       record pupils
+       send -- numerical -- heartbeats to VR machine
+  + VR (virtual reality) machine
+    => get and save signal from wheel
+       get -- numerical -- heartbeats from eyecam machine
+       display VR with unity (if used, but not by Petr)
+
+
+TwoPhotonPipeline tour
+----------------------
+
+/!\ this package override some Matlab functions ! really bad practice
+
+- GuiAddToStackList
+  + need file path of ImageData/RawData and save it
+    but it's not used by next step :S
+  + add StackID to folder name
+    create ini file
+    modify excel file in ExpLog
+    modify grab file
+
+- paths defined in "define_path_bioz" function
+  => gives paths on machine, for each user
+
+- poi library needed on Linux to load/save excel in Linux
+
+- GuiRunAnalysisList
+  + select experiment
+    => find trials (stacks) but don't use paths saved in excel file, use
+       convention on folder names !
+  + checkboxes in lower panel are useless
+    clear remove all selected stacks
+    operations applied in all visible stacks in the lower panel
+
+- registration (in GuiRunAnalysisList)
+  + in Petr version, stacks copy locally and shifts copied back to server
+  + resulting .mat file (in AData server folder) used to add infos of following
+    steps
+  + ProcessedData folder now contains empty stacks (but still create it)
+    => before the registered data where copied their
+
+- ROI
+  + Petr uses only donut (semi-automatic)
+  + first one reference stack is selected from all stacks in an experiment
+    => from average images
+  + /!\ if no PCA/ICA step computed, no results saved
+  + morphological method should be run before adding a cell (create structure
+    where to put resulting ROIs)
+  + cannot reload previous ROI
+  + PCA/ICA working super good for Petr
+  + select an ROI (difficult to click on it :S) to edit it
+  + results of this Gui in a "bwsel" variable
+    => just a mask, labels lost, use of matlab with component labelling after
+       to get it back
+
+- ROI sh
+  => no Gui, use ROI from the reference stack and align it for other
+     experiments
+
+- act
+  + extract activity (average or weighted sum ?)
+  + infer spikes, but time consuming (more than recording)
+
+- vol
+  => kind of repeat_checker (cf. ROI Gui) but useless now that this latter
+     exists
+
+- ch2 => ask Florencia
+
+- Stim
+  => find right stim file (using date) and add its path to AData .mat file

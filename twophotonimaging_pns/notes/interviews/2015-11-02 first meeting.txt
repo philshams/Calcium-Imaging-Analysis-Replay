@@ -1,0 +1,63 @@
+Refactoring of TwoPhotonPipeline
+================================
+
+Typical pipeline
+----------------
+
+1. read in data, 2 formats
+   - stack of Tiff files
+   - raw format
+   /!\ unify inputs
+
+2. registration (align images)
+   /!\ avoid copy images, just save delta (x, y)
+   /!\ do it while loading
+   /!\ GUI to select/remove frames containing out-of-focus cells
+       and/or indicator of this phenomenon
+
+3. ROI definition
+   - several algorithms
+   - from manual to semi-automatic
+   - need nice GUI to (un-)select cells
+   - issues with surrounding activity, dendrites passing... should not included
+     in ROI of a cell
+  /!\ GUI to help viewing images and selecting/correcting ROIs, highlight
+      possible problems with surrounding activity of a cell
+
+4. timeseries extraction
+
+
+Particular issues
+-----------------
+
+code exists (TwoPhotonPipeline stack + personal flavors ?)
+=> assemble and tidy more than rewrite
+
+data should be copy once from drive to local computer (not back and forth)
+=> hide it in a class which locally cache the data from drive ?
+
+avoid loading everything in memory
+=> - reuse Dylan code from TiffStack to lazily load frame into memory
+   - re-design critical methods to work online ?
+
+
+People involved
+---------------
+
+- Peter knows best the code of TwoPhotonPipeline
+- Flore (leaving soon) knows the code also
+- Ioanna
+- Ivanna
+- Kelly (in the future)
+- Ivan (in the future)
+
+- Dylan and Morgane have their own stuff, unlikely to change to this code but
+  may have interesting ideas ?
+
+
+First steps
+-----------
+
+- 1st meeting: 6 people, agree on core functionalities
+- 2nd meeting: everyone, to get comments
+

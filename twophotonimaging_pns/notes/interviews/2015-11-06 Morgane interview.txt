@@ -1,0 +1,22 @@
+Morgane interview - Calliope demo
+=================================
+
+- 1 session = 1h. / animal
+  1 trial = 10-15 min.
+
+- use Calliope, from FMI group (Keller)
+- software base on excel file, use a unique timestamp for each recording
+  => same ID for all files, behaviour and images ! really useful
+- synchronisation of images and behavioural data
+  => tricky in case of problems, with many quick restarts
+
+- first step to group stacks as experiments
+  => grouped data for registration and ROIs after (heavy on memory)
+
+- same Gui for ROIs than TwoPhotonPipeline
+  -> but can plot activity trace once ROIs done
+  -> cluster is about grouping axons buttons
+     just display, not save at present time
+
+- workflow separated for images and behavioural data
+  => analyzed together at the end

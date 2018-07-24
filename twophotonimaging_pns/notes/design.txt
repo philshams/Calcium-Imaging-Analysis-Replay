@@ -1,0 +1,212 @@
+Design document for a two-photon analysis toolbox
+=================================================
+
+
+Actual code
+-----------
+
+- lots of copied, dead and unmaintained code
+  => need clean the repository, keep good parts
+
+- workflow based on GUIs
+  => maintenance burden
+     low customization
+     low reproducibility of steps
+     useful for interactive ROI selection (donut/celldetect code)
+
+- file organization on the network drive
+  + split folders for images, behavioral data, processed data...
+    => everything distributed, difficult to extract one piece with everything
+       related
+  + central excel file to organize/link files and give overview of done trials
+    => comes from Calliope (Keller lab/FMI) workflow
+       add dependency to Excel, leading to maintenance burden and platform
+       dependency problems
+       gives good summary of what has been done
+       
+- big setting file modified by each user
+  => should not be in the shared code
+
+
+Design proposal
+---------------
+
+Globally:
+- reorganize workflow around directories of trials
+- replace GUIs by a central object keeping track of operations,
+  relying on a set of low-level KISS functions
+  => more interactive use of matlab CLI
+     low-level functions with general inputs (tensors-like)
+     use Dylan's code to make raw data load lazily and look like tensors
+     load/save object (with autosave of steps done) and keep readable log
+- provide function(s) to get overview/summary of datasets metadata as a table
+  and/or a .csv file
+  => to get rid of Excel as an intermediate step
+
+About GUIs:
+- keep donut/celldetect GUIs and merge them if possible
+- remove ImageJ dependency for repeatchecker => built it in donut/celldetect
+- get an overview of averaged stacks (registered or not) in a GUI
+- design of GUI in a Model-View-Presenter approach (passive view flavor)
+  => many GUI components and some models assembled to get a functional GUI
+
+To deal with all (currently) possible datasets:
+- adjust everything (from core structures to higher-levels functions) to works
+  with multiple channels and/or multiple z-planes
+
+To make people use it:
+- provide documentation of each function and examples
+
+
+Unaddressed issues
+------------------
+
+- synchronization of stimulus files with trials
+
+
+API mockup
+----------
+
+- ExpStack object
+
+  1. constructor with input directories, and output directory for .mat and log
+     -> can be called through a GUI to select directories
+        can enable caching (local copy) of files
+        can autosave (default yes?)
+  2. select reference images
+  3. register images
+     check registration
+     fix bad registration results
+  4. average registered stack, min/max projections
+  5. rois selection (CLI and/or GUI refinement)
+  6. activity extraction (w/wo neuropil decontamination)
+  7. spikes extraction
+
+  + display current state (what's done or not)
+  + invalidate subsequent steps when recomputing previous ones (with a
+    confirmation message?)
+  + provide ETA for long operations
+  + can be loaded/saved
+  + export .mat that don't rely on its class
+
+- low-level functions
+
+  stacksload: load folders of .tif + metadata, or .bin files
+    + stacks are TensorStacks of TIFFStacks/MappedTensor
+
+  stacksmean: average stacks w/wo registration
+    + apply translation on the fly
+    + online computation, can load chunks
+
+  stacksminmax: min/max projections w/wo registration
+    + apply translation on the fly
+    + online computation, can load chunks
+
+  stacksregister_dft: (x, y) shifts
+    + use dftregistration
+    + different registrations for each z-plane
+    + combine channels for registration
+    + provide a warning in case of weird registration
+
+  smooth_registration: fix registration problems, e.g. interpolating
+
+  stacktranslate: translated a stack
+    + same as imtranslate but for tensors
+
+- display and rois gui
+  + generic in its inputs: set of stacks w/wo (x,y)-shifts, averaged stacks,
+    min/max projections, rois...
+  + display all data (sliders for time, channel, zplanes) applying shifts on
+    the fly
+  + use/combine donut and celldetect tools
+  + could open plot of timecourses clicking on ROIs ?
+  + outputs ROIs
+
+- summarize_experiments(path) -> table
+  + provide a table with similar info as the excel file for all ExpStack found
+    in subfolders in the path
+
+TODO:
+- blood vessels signal subtraction
+- Petr contamination removal
+- ICA-based contamination removal (FISSA)
+- donut simple API (without GUI)
+- PCA/ICA simple API (without GUI)
+- (f)oopsi algorithm for spikes extraction
+- NERDS algorithm for spikes extraction
+- extract time courses
+  + can use same ROI w/ different channels
+  + has a minimal size parameter
+- filtering time courses (what is needed?)
+- cross-correlation used to select stable images in stack as references?
+
+
+Remarks
+-------
+
+Petr:
+- should be easy to re-apply automatic ROI from one zplane to another (reuse
+  same parameters)
+- registration between trials might not be ok, as there are tiny z-shifts
+  => use one template per trial is relevant in this case
+- adding trials later should be easy
+- take into account rotation/scales changes from trial to trial is taken
+  different days (when animals are removed and put again)
+  => rotation/scale recomputed for a whole trial compared to another
+- different timecourses extraction methods exists, be sure to have several
+  available (dealing or not with neuropils contamination)
+- eye pupil extraction code exists elsewhere, should be included
+
+Rob:
+- caching from OS could be sufficient, has to be checked before adding another
+  layer of cache
+- cache could have problems if processing done on different machines, or swept
+  cache due to too many people using it on the same machine
+- other registration functions available on Matlab File Exchange
+
+Ioana:
+- steps can be separated by weeks, i.e. between registration and ROIs
+  extraction
+- donut_gui display not as good as ImageJ display, should be fixed
+
+Tom:
+- an alarm should be raised (warning ?) if registration gives poor results
+- would be nice to have a display of activities in ROIs (clicking on a cell)
+  overlayed with other signasl (cf. timeseries of Dylan ?)
+
+Morgane:
+- with Dylan, don't try to remove neuropil contamination
+- subtract blood vessel signal (defined in a ROI) from all timeseries
+- remove ROIs if on the edge and contaminated by screen signal
+
+Maxime:
+- live session not as beautiful as theory, how to record/reproduce what has
+  been really done with data ?
+- make things re-runnable without interactions
+  => memoize inputs of time consuming steps ?
+- build on top an ExpStack object
+  + keep record of steps (not) done
+  + to load/save things
+  + to easily add new trials
+
+Flore
+- GUI needed to select experiments
+- speed issues need to be addressed
+- loading and caching could be affected by people working on many stacks at the
+  same time (discarding cached stacks)
+- in GUI, need for fast switch on/off of ROIs display
+- manual tools needed in GUI are ellipse, for spines, and straight lines,for
+  dendrites
+- find a way to easily go through different ROIs (donut, pca/ica, manual...)
+  -> at the level of each ROI
+     at the level of all ROIS
+     with a nice shorcut, e.g. mouse wheel
+- ROI gui must be able to reload ROIs
+  /!\ donut code might use some correlation-based criterion that need to be
+      recomputed, to be able to change ROIs shape/size with this tool
+
+
+Future issues
+-------------
+
+- get unique IDs for each trial (as in FMI system) on recording machines

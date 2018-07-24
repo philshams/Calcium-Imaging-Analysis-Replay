@@ -1,0 +1,79 @@
+Ioana intervew - TwoPhotonPipeline demo
+=======================================
+
+File organisation
+-----------------
+
+- ImageData/
+
+    - RawData/ -> raw data sequences
+      subfolders (per people then experiences ?), containing
+      + .tiff files (sequences, split if two big ?)
+      + a grab file (.mat) -> metadata about acquisition
+
+    - StimData/ -> stimulus informations, related but not synced with RawData
+
+    - ExpLog/ -> Excel spreadsheets (one per person ?) making connection
+                 between file and StackID/ExpID
+
+    - AData/ -> ROI results
+      + 1 .mat per slice file
+
+
+Grouping recordings
+-------------------
+
+- grouping/referencing sequences into ExpLog using "GuiAddToStackList"
+  => each recording has a unique StackID
+     part of an experiment with a ExpID (= StackID of 1st recording of the set)
+     other metadata (projet, experimenter, animal, date...)
+  => recording in ExpLog/<pattern with experiment name ?>.xsls
+     increment a text file (where ?) keeping count of last used StackID ?
+
+- GuiAddToStackList call "main_InVitro.m"
+
+
+Analysis
+--------
+
+- GuiRunAnalysisList launches gui for analysis
+  + not clear what "Clear" button does
+
+- registration
+  + seems some computations are re-done even after unchecking the StackID for
+    a specific stack (in lower panel)
+
+- ROI selection
+  + method selected in personal settings ("myexp/" subdirectory)
+  + donut_main (GUI) is semi-automatic method used by Ioana
+    * can be used alone
+    * radio-button for add/remove/change mask/erode/dilate ?
+    * erode/dilate doesn't seem to work with individual masks
+      but with "all" it does
+  + after 1 slice (Z-axis) is done, automatically switch to the next one
+    -> not sure if results are saved if procedure interrupted before all slices
+       are processed
+
+- ch2 => handle a second channel (other color)
+
+- stim => sync stimulus info with recordings infos (from StimData)
+
+- for interleaved data (Z-axis), they are separated at some point
+  (registration ?) to get several data file
+
+
+Discussion with Rob
+-------------------
+
+- reduce burden on stimulus sync by
+  + putting networkless machines (stimulus & co) in a network with a
+    network-linked machine (running NTP ?)
+  + the network-linked machine could retrieve stimulus directly from stimulus
+    machine ?
+
+- setting_handler repo on bitucket:
+  solution to handle local settings for matlab code (avoid everyone to edit its
+  own myexp/)
+
+- change directory structure to get everything in one place ?
+
