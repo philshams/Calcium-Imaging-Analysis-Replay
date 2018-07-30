@@ -86,14 +86,17 @@ for s = 1:length(stims)
     
     % loop across trials
     for trial = 1:size(psth_all_trials.(stims{s}),1)
-        plot(psth_window/frame_rate, psth_all_trials_BS.(stims{s})(trial,:),'color',[0 0 1 .5],'linewidth',.6)
+        plot(psth_window/frame_rate, psth_all_trials.(stims{s})(trial,:),'color',[0 0 1 .5],'linewidth',.6)
     end
 
-    if size(psth_all_trials.(stims{s}),1) > 7
-        plot(psth_window/frame_rate, prctile(psth_all_trials_BS.(stims{s}),25),'color',[.6 .6 .8],'linewidth',1)
-        plot(psth_window/frame_rate, prctile(psth_all_trials_BS.(stims{s}),50),'color','white','linewidth',2)
-        plot(psth_window/frame_rate, prctile(psth_all_trials_BS.(stims{s}),75),'color',[.6 .6 .8],'linewidth',1)
-    end
+        plot(psth_window/frame_rate, prctile(psth_all_trials.(stims{s}),90),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
+        plot(psth_window/frame_rate, prctile(psth_all_trials.(stims{s}),50),'color','white','linewidth',2)
+        plot(psth_window/frame_rate, prctile(psth_all_trials.(stims{s}),10),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
+
+%         plot(psth_window/frame_rate, prctile(psth_all_trials.(stims{s}),25),'color',[.6 .6 .8],'linewidth',1)
+%         plot(psth_window/frame_rate, prctile(psth_all_trials.(stims{s}),50),'color','white','linewidth',2)
+%         plot(psth_window/frame_rate, prctile(psth_all_trials.(stims{s}),75),'color',[.6 .6 .8],'linewidth',1)
+
     
     
     line([0,0],ylim,'linestyle','--','color',[.6 .2 .5]);

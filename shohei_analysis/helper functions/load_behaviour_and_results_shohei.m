@@ -39,3 +39,15 @@ else
     disp('getting stimulus onset indices...');
     get_stimulus_indices_shohei % stored as inds.stim_name / onset.stim_name / offset.stim_name
 end
+
+% trim onset and offset:
+% get trial start indices to average data for each trial -- trim off
+% stimuli from trials not starting at a1 or ending with rew
+first_onset = onset.a1(1); last_offset = offset.r1(end);
+for s = 1:length(stims)
+   onset.(stims{s}) = onset.(stims{s})(onset.(stims{s}) >= first_onset);
+   offset.(stims{s}) = offset.(stims{s})(offset.(stims{s}) >= first_onset);
+
+   onset.(stims{s}) = onset.(stims{s})(onset.(stims{s}) <= last_offset);
+   offset.(stims{s}) = offset.(stims{s})(offset.(stims{s}) <= last_offset);       
+end

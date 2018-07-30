@@ -3,7 +3,7 @@
 % ------------------------------------------
 
 % get indices of each stimulus
-inds.stim = find(behaviour_table.photodiode>8);
+inds.stim = find(behaviour_table.photodiode>2);
 inds.gray = setdiff(1:length(behaviour_table.stim_id),inds.stim);
 
 % get particular stimulus identity by tunnel position

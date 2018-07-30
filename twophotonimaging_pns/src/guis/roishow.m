@@ -141,7 +141,11 @@ function plot_trace(trace, trace_title, parent)
     h = plot(trace, 'Parent', parent); hold on
     if strcmp(trace_title, 'psth')
         plot([20 20],[min(trace(:)) 1.2*max(trace(:))],'color','k','linestyle',':', 'Parent', parent)
-        set(h,{'color'},{[0 0 1 .7];[.4 .4 0 .7];[0 .3 .8 .7];[.5 .3 .2 .7];[.3 .3 .3 .7];[.5 0 0 .7];[0 .5 0 .7];[.3 .3 .3 .7];[1 0 0 .7];[0 1 0]})
+        if size(trace,2) == 5
+            set(h,{'color'},{[0 0 1 .7];[.4 .4 0 .7];[0 .3 .8 .7];[.5 .3 .2 .7];[0 1 0 .7]})
+        elseif size(trace,2) == 10
+            set(h,{'color'},{[0 0 1 .7];[.4 .4 0 .7];[0 .3 .8 .7];[.5 .3 .2 .7];[.3 .3 .3 .7];[.5 0 0 .7];[0 .5 0 .7];[.3 .3 .3 .7];[1 0 0 .7];[0 1 0]})
+        end
     end
     
     axis(parent, 'tight');

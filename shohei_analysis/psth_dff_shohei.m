@@ -4,12 +4,12 @@
 
 % file locations
 behaviour_folder = '\\172.24.170.8\data\public\projects\ShFu_20160303_Plasticity\Data\Imaging\CLP3\Labview_data\171225';
-results_file = 'C:\Drive\Rotation3\data\shohei_results\results_task.mat';
+results_file = 'C:\Drive\Rotation3\data\shohei_results_test_artifact\results_task.mat';
 psth_save_folder = 'C:\Drive\Rotation3\data\shohei_psth\';
 
 
 % range around stimulus to measure - should start at -20
-psth_window = -20:40;
+psth_window = -20:20;
 
 % set stims -- should correspond to get_stimulus_indices notation
 stims = {'a1','b1','a2','b2','r1'};
@@ -25,7 +25,7 @@ load_behaviour_and_results_shohei
 
 % active cells only?
 % provide threshold of proportion activity > 5 std negative distribution
-active_cells_only = true; active_cell_threshold = .01;
+active_cells_only = false; active_cell_threshold = .01;
 
 
 
@@ -123,9 +123,10 @@ end
 
 %% plot stimulus responses
 
-figure('Name',figure_name,'Position', [27 575 2349 707]); hold on; movegui(gca,'onscreen')
+f = figure('Name',figure_name,'Position', [27 575 2349 707]); hold on; movegui(gca,'onscreen')
+set(f,'color','black');
 stim_order = {'a','b','r'};
-stim_colors = {[0 0 1 .7];[.4 .4 0 .7];[0 .3 .8 .7];[.5 .3 .2 .7];[1 0 0 .7];};
+stim_colors = {[0 0 1 .7];[.4 .4 0 .7];[0 .3 .8 .7];[.5 .3 .2 .7];[0 1 0 .7];};
 
 
 % loop across stimuli
@@ -134,23 +135,27 @@ for s = 1:length(stims)
     subplot(2,3, find(cellfun(@(x) stims{s}(1)==x, stim_order))+3*(str2num(stims{s}(2))-1)); hold on
     
     title(['PSTH of all cells to ' stims{s} ' stimulus'],'color',stim_colors{s});
-    xlabel('time (sec) from stim onset');
-    ylabel('df/f');
+    xlabel('time (sec) from stim onset','color','w');
+    ylabel('df/f','color','w');
     
     % loop across cells
     for cell = intersect(1:size(psth.(stims{s}),1),cells_to_plot)
-        plot(psth_window/frame_rate, psth_BS.(stims{s})(cell,:),'color',[0 0 1 .7],'linewidth',.6)
+        plot(psth_window/frame_rate, psth.(stims{s})(cell,:),'color',[0 0 1 .7],'linewidth',.6)
     end
 
     % plot mean / std
-    plot(psth_window/frame_rate, mean(psth_BS.(stims{s}))-std(psth_BS.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
-    plot(psth_window/frame_rate, mean(psth_BS.(stims{s})),'color','white','linewidth',2)
-    plot(psth_window/frame_rate, mean(psth_BS.(stims{s}))+std(psth_BS.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')    
+    plot(psth_window/frame_rate, prctile(psth.(stims{s})(cells_to_plot,:),90),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
+    plot(psth_window/frame_rate, prctile(psth.(stims{s})(cells_to_plot,:),50),'color','white','linewidth',2)
+    plot(psth_window/frame_rate, prctile(psth.(stims{s})(cells_to_plot,:),10),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')    
+    
+%     plot(psth_window/frame_rate, mean(psth.(stims{s})(cells_to_plot,:))-std(psth.(stims{s})(cells_to_plot,:)),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
+%     plot(psth_window/frame_rate, mean(psth.(stims{s})(cells_to_plot,:)),'color','white','linewidth',2)
+%     plot(psth_window/frame_rate, mean(psth.(stims{s})(cells_to_plot,:))+std(psth.(stims{s})(cells_to_plot,:)),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')    
 
 
 % plot formatting
     line([0,0],ylim,'linestyle','--','color',[.6 .2 .5]);
-    set(gca,'Color','k') 
+    set(gca,'Color',[1 1 1]*.025,'XColor',[1 1 1]*.7,'Ycolor',[1 1 1]*.7) 
     axis tight
     
     pause(.05)
@@ -169,7 +174,7 @@ else
         % avg all psths to see avg stimulus response
         psth_all = zeros(length(psth_window),length(stims));
         for s = 1:length(stims)
-            psth_all(:,s) = psth_BS.(stims{s})(cell,:) / length(stims);
+            psth_all(:,s) = psth.(stims{s})(cell,:) / length(stims);
         end
 
         % skip deleted ROIs

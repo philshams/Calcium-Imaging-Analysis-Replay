@@ -142,16 +142,20 @@ for s = 1:length(stims)
         if isempty(session_results.dff(1,cell)) || isempty(session_results.dff(2,cell))
             continue
         end        
-        plot(psth_window/frame_rate, psth_BS.(stims{s})(cell,:),'color',[0 0 1 .7],'linewidth',.6)
+        plot(psth_window/frame_rate, psth.(stims{s})(cell,:),'color',[0 0 1 .7],'linewidth',.6)
     end
 
     % plot mean / std
-    plot(psth_window/frame_rate, mean(psth_BS.(stims{s}))-std(psth_BS.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
-    plot(psth_window/frame_rate, mean(psth_BS.(stims{s})),'color','white','linewidth',2)
-    plot(psth_window/frame_rate, mean(psth_BS.(stims{s}))+std(psth_BS.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')    
+    plot(psth_window/frame_rate, prctile(psth.(stims{s})(cells_to_plot,:),90),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
+    plot(psth_window/frame_rate, prctile(psth.(stims{s})(cells_to_plot,:),50),'color','white','linewidth',2)
+    plot(psth_window/frame_rate, prctile(psth.(stims{s})(cells_to_plot,:),10),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')    
+    
+%     plot(psth_window/frame_rate, mean(psth.(stims{s})(cells_to_plot,:))-std(psth.(stims{s})(cells_to_plot,:)),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
+%     plot(psth_window/frame_rate, mean(psth.(stims{s})(cells_to_plot,:)),'color','white','linewidth',2)
+%     plot(psth_window/frame_rate, mean(psth.(stims{s})(cells_to_plot,:))+std(psth.(stims{s})(cells_to_plot,:)),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')    
+
     
     % plot formatting
-    ylim([-1 1])
     line([0,0],ylim,'linestyle','--','color',[.6 .2 .5]);
     set(gca,'Color','k') 
     axis tight

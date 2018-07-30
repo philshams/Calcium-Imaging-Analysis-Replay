@@ -4,7 +4,7 @@
 
 % file locations
 behaviour_folder = '\\172.24.170.8\data\public\projects\ShFu_20160303_Plasticity\Data\Imaging\CLP3\Labview_data\171225';
-results_file = 'C:\Drive\Rotation3\data\shohei_results\results_task.mat';
+results_file = 'C:\Drive\Rotation3\data\shohei_results_test_artifact\results_task.mat';
 psth_save_folder = 'C:\Drive\Rotation3\data\shohei_psth\';
 
 % range around stimulus to measure - should start at -20
@@ -23,7 +23,7 @@ frame_rate = 3.9;
 load_behaviour_and_results_shohei
 
 % choose which cell(s) by ID to plot!
-cells = 131;
+cells = 5;
 
 
 %% extract PSTH
@@ -86,17 +86,17 @@ for s = 1:length(stims)
     
     % loop across trials
     for trial = 1:size(psth_all_trials.(stims{s}),1)
-        plot(psth_window/frame_rate, psth_all_trials_BS.(stims{s})(trial,:),'color',[0 0 1 .5],'linewidth',.6)
+        plot(psth_window/frame_rate, psth_all_trials.(stims{s})(trial,:),'color',[0 0 1 .5],'linewidth',.6)
     end
 
     if size(psth_all_trials.(stims{s}),1) > 10
-%         plot(psth_window/frame_rate, prctile(psth_all_trials_BS.(stims{s}),90),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
-%         plot(psth_window/frame_rate, prctile(psth_all_trials_BS.(stims{s}),50),'color','white','linewidth',2)
-%         plot(psth_window/frame_rate, prctile(psth_all_trials_BS.(stims{s}),10),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
+        plot(psth_window/frame_rate, prctile(psth_all_trials.(stims{s}),90),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
+        plot(psth_window/frame_rate, prctile(psth_all_trials.(stims{s}),50),'color','white','linewidth',2)
+        plot(psth_window/frame_rate, prctile(psth_all_trials.(stims{s}),10),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
         
-        plot(psth_window/frame_rate, mean(psth_all_trials_BS.(stims{s}))-std(psth_all_trials_BS.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
-        plot(psth_window/frame_rate, mean(psth_all_trials_BS.(stims{s})),'color','white','linewidth',2)
-        plot(psth_window/frame_rate, mean(psth_all_trials_BS.(stims{s}))+std(psth_all_trials_BS.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')        
+%         plot(psth_window/frame_rate, mean(psth_all_trials.(stims{s}))-std(psth_all_trials.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')
+%         plot(psth_window/frame_rate, mean(psth_all_trials.(stims{s})),'color','white','linewidth',2)
+%         plot(psth_window/frame_rate, mean(psth_all_trials.(stims{s}))+std(psth_all_trials.(stims{s})),'color',[.6 .6 .8],'linewidth',1,'linestyle','--')        
     end
     
     

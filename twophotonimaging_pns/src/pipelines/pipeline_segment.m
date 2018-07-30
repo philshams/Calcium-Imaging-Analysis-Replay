@@ -167,11 +167,15 @@ function [stacks, resultspath] = pipeline_segment(varargin)
     fprintf('%s - ', datestr(now()));
     if ~exist('avg_regs', 'var')
         fprintf('load registration results...\n')
-        reg_results = cellfun(@load, registerpath);
-        avg_regs = cat(2, reg_results.avg_regs);
-        max_projs = cat(2, reg_results.max_projs);
-        stackspath = cat(2, reg_results.stackspath);
-        xyshifts = cat(2, reg_results.xyshifts);
+        reg_results = cellfun(@load, registerpath,'UniformOutput',false);
+%         avg_regs = cat(2, reg_results.avg_regs);
+        avg_regs = cellfun(@(x) x.avg_regs, reg_results);
+%         max_projs = cat(2, reg_results.max_projs);
+        max_projs = cellfun(@(x) x.max_projs, reg_results);
+%         stackspath = cat(2, reg_results.stackspath);
+        stackspath = cellfun(@(x) x.stackspath, reg_results);
+%         xyshifts = cat(2, reg_results.xyshifts);
+        xyshifts = cellfun(@(x) x.xyshifts, reg_results);
         save(resultspath, 'avg_regs', 'max_projs', 'stackspath', 'xyshifts', ...
              '-append');
     else

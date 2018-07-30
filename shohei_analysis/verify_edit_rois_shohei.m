@@ -7,7 +7,10 @@
 
 % set folders
 behaviour_folder = '\\172.24.170.8\data\public\projects\ShFu_20160303_Plasticity\Data\Imaging\CLP3\Labview_data\171225';
-results_file = 'C:\Drive\Rotation3\data\shohei_results\results_task.mat';
+results_file = 'C:\Drive\Rotation3\data\shohei_results_test_artifact\results_task.mat';
+
+% *** set up for another day...
+
 psth_save_folder = 'C:\Drive\Rotation3\data\shohei_psth\';
 
 animal = 'shohei';
@@ -186,7 +189,7 @@ end
 dff = session_results.dff;
 
 save(results_file, 'stable_epoch', 'dff', '-append');
-
+disp('done.')
 
 end
 
